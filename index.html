@@ -180,3 +180,546 @@
     max-height: calc(100vh - 160px);
     overflow-y: auto;
     padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .item, .num {
+    padding: 7px 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: .875rem;
+    transition: background .12s, border-color .12s;
+    user-select: none;
+  }
+  .item:hover, .num:hover { background: var(--accent-light); border-color: var(--accent); }
+  .item.selected, .num.selected {
+    background: var(--selected);
+    border-color: var(--selected-border);
+    font-weight: 600;
+  }
+  .num { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .correct {
+    background: var(--correct) !important;
+    border-color: #81c784 !important;
+    color: var(--correct-text);
+    cursor: default;
+    font-weight: 600;
+  }
+  .correct:hover { background: var(--correct) !important; }
+
+  /* ── Mobile layout ── */
+  .mobile-layout { display: none; }
+
+  .mobile-view { display: none; flex-direction: column; height: calc(100vh - 90px); }
+  .mobile-view.active { display: flex; }
+
+  .mobile-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    align-content: start;
+  }
+  .mobile-list.names-list { grid-template-columns: 1fr; }
+
+  .mobile-num-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 6px;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .12s;
+    user-select: none;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .mobile-num-card:hover, .mobile-num-card:active { background: var(--accent-light); border-color: var(--accent); }
+  .mobile-num-card.correct {
+    background: var(--correct);
+    border-color: #81c784;
+    color: var(--correct-text);
+    cursor: default;
+    font-size: .78rem;
+    font-weight: 600;
+  }
+  .mobile-num-card.correct .card-num { font-size: 1rem; font-weight: 700; display: block; }
+  .mobile-num-card.correct .card-name { display: block; }
+  .mobile-num-card:not(.correct) .card-num { font-size: 1.1rem; }
+  .mobile-num-card:not(.correct) .card-name { display: none; }
+
+  .mobile-name-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: background .12s;
+    user-select: none;
+  }
+  .mobile-name-card:hover, .mobile-name-card:active { background: var(--accent-light); border-color: var(--accent); }
+  .mobile-name-card.wrong-flash {
+    background: var(--error);
+    border-color: #ef9a9a;
+    animation: shake .3s;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  .mobile-subheader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 5px 10px;
+    font-size: .8rem;
+    cursor: pointer;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .back-btn:hover { background: var(--accent-light); }
+  .mobile-subheader span { font-size: .9rem; color: var(--muted); }
+  .mobile-subheader strong { color: var(--text); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .desktop-layout { display: none; }
+    .mobile-layout  { display: block; }
+    .mode-cards     { flex-direction: column; align-items: center; }
+    .mode-card      { width: 100%; max-width: 320px; }
+  }
+
+  /* ── Fin banner ── */
+  #fin-banner {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 50px 20px;
+    text-align: center;
+  }
+  #fin-banner .fin-title { font-size: 2rem; }
+  #fin-banner .fin-time-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #fin-banner .fin-time-label {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+  }
+  #fin-banner .fin-time-value {
+    font-size: 2.4rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+  }
+  #fin-banner .fin-best { font-size: .95rem; color: var(--muted); }
+  #fin-banner .fin-best strong { color: var(--text); }
+  #fin-banner .fin-best.new-record { color: #e6a817; font-weight: 700; }
+  .fin-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .fin-btn {
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 24px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .fin-btn.primary { background: var(--accent); color: #fff; }
+  .fin-btn.secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+  .fin-btn:hover { opacity: .82; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     PAGE D'ACCUEIL
+══════════════════════════════ -->
+<div id="accueil" style="display:flex">
+  <div class="accueil-logo">🗺</div>
+  <div>
+    <h1>Départements français</h1>
+    <p style="margin-top:8px">Associe chaque département à son numéro.<br>Choisis ton mode de jeu :</p>
+  </div>
+  <div class="mode-cards">
+    <div class="mode-card ordre" onclick="startGame('ordre')">
+      <div class="mode-icon">📋</div>
+      <div class="mode-title">Dans l'ordre</div>
+      <div class="mode-desc">Les numéros sont dans l'ordre croissant. Les noms sont mélangés.</div>
+      <div class="mode-record" id="record-ordre"></div>
+    </div>
+    <div class="mode-card desordre" onclick="startGame('desordre')">
+      <div class="mode-icon">🔀</div>
+      <div class="mode-title">Désordre total</div>
+      <div class="mode-desc">Numéros et noms sont tous les deux dans un ordre aléatoire.</div>
+      <div class="mode-record" id="record-desordre"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ÉCRAN DE JEU
+══════════════════════════════ -->
+<div id="game-screen">
+
+  <header>
+    <div class="header-left">
+      <button id="home-btn" onclick="goHome()">← Accueil</button>
+      <h1>Départements français</h1>
+    </div>
+    <div class="header-right">
+      <span id="mode-badge"></span>
+      <span id="progress-badge">0 / 101</span>
+    </div>
+  </header>
+
+  <div id="message"></div>
+
+  <!-- DESKTOP -->
+  <div class="desktop-layout">
+    <div class="panel">
+      <h2>Départements</h2>
+      <div id="departements" class="grid"></div>
+    </div>
+    <div class="panel">
+      <h2>Numéros</h2>
+      <div id="numeros" class="grid"></div>
+    </div>
+  </div>
+
+  <!-- MOBILE -->
+  <div class="mobile-layout">
+    <div id="view-numeros" class="mobile-view active">
+      <div class="mobile-list" id="mobile-numeros"></div>
+    </div>
+    <div id="view-noms" class="mobile-view">
+      <div class="mobile-subheader">
+        <button class="back-btn" onclick="mobileBack()">← Retour</button>
+        <span>Département <strong id="selected-num-label"></strong> ?</span>
+      </div>
+      <div class="mobile-list names-list" id="mobile-noms"></div>
+    </div>
+  </div>
+
+  <!-- FIN -->
+  <div id="fin-banner">
+    <div class="fin-title">🎉 Bravo, tout est terminé !</div>
+    <div class="fin-time-box">
+      <span class="fin-time-label">Ton temps</span>
+      <span class="fin-time-value" id="fin-time-value">--:--</span>
+    </div>
+    <div class="fin-best" id="fin-best"></div>
+    <div class="fin-buttons">
+      <button class="fin-btn primary" id="replay-btn">🔄 Rejouer ce mode</button>
+      <button class="fin-btn secondary" onclick="goHome()">🏠 Accueil</button>
+    </div>
+  </div>
+
+</div><!-- /game-screen -->
+
+<script>
+const deps = [
+["01","Ain"],["02","Aisne"],["03","Allier"],["04","Alpes-de-Haute-Provence"],["05","Hautes-Alpes"],
+["06","Alpes-Maritimes"],["07","Ardèche"],["08","Ardennes"],["09","Ariège"],["10","Aube"],
+["11","Aude"],["12","Aveyron"],["13","Bouches-du-Rhône"],["14","Calvados"],["15","Cantal"],
+["16","Charente"],["17","Charente-Maritime"],["18","Cher"],["19","Corrèze"],["2A","Corse-du-Sud"],
+["2B","Haute-Corse"],["21","Côte-d'Or"],["22","Côtes-d'Armor"],["23","Creuse"],["24","Dordogne"],
+["25","Doubs"],["26","Drôme"],["27","Eure"],["28","Eure-et-Loir"],["29","Finistère"],
+["30","Gard"],["31","Haute-Garonne"],["32","Gers"],["33","Gironde"],["34","Hérault"],
+["35","Ille-et-Vilaine"],["36","Indre"],["37","Indre-et-Loire"],["38","Isère"],["39","Jura"],
+["40","Landes"],["41","Loir-et-Cher"],["42","Loire"],["43","Haute-Loire"],["44","Loire-Atlantique"],
+["45","Loiret"],["46","Lot"],["47","Lot-et-Garonne"],["48","Lozère"],["49","Maine-et-Loire"],
+["50","Manche"],["51","Marne"],["52","Haute-Marne"],["53","Mayenne"],["54","Meurthe-et-Moselle"],
+["55","Meuse"],["56","Morbihan"],["57","Moselle"],["58","Nièvre"],["59","Nord"],
+["60","Oise"],["61","Orne"],["62","Pas-de-Calais"],["63","Puy-de-Dôme"],["64","Pyrénées-Atlantiques"],
+["65","Hautes-Pyrénées"],["66","Pyrénées-Orientales"],["67","Bas-Rhin"],["68","Haut-Rhin"],["69","Rhône"],
+["70","Haute-Saône"],["71","Saône-et-Loire"],["72","Sarthe"],["73","Savoie"],["74","Haute-Savoie"],
+["75","Paris"],["76","Seine-Maritime"],["77","Seine-et-Marne"],["78","Yvelines"],["79","Deux-Sèvres"],
+["80","Somme"],["81","Tarn"],["82","Tarn-et-Garonne"],["83","Var"],["84","Vaucluse"],
+["85","Vendée"],["86","Vienne"],["87","Haute-Vienne"],["88","Vosges"],["89","Yonne"],
+["90","Territoire de Belfort"],["91","Essonne"],["92","Hauts-de-Seine"],["93","Seine-Saint-Denis"],
+["94","Val-de-Marne"],["95","Val-d'Oise"],["971","Guadeloupe"],["972","Martinique"],
+["973","Guyane"],["974","La Réunion"],["976","Mayotte"]
+];
+
+/* ════════════════════════════
+   UTILITAIRES
+════════════════════════════ */
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function fmt(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  return String(m).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0');
+}
+
+function storageKey(mode) {
+  return mode === 'ordre' ? 'deps_best_ordre_ms' : 'deps_best_desordre_ms';
+}
+
+/* ── localStorage sécurisé (résiste aux extensions / navigation privée) ── */
+function lsGet(key) {
+  try { return localStorage.getItem(key); } catch(e) { return null; }
+}
+function lsSet(key, val) {
+  try { localStorage.setItem(key, val); } catch(e) { /* silencieux */ }
+}
+
+/* ════════════════════════════
+   PAGE D'ACCUEIL
+════════════════════════════ */
+function renderAccueil() {
+  ['ordre','desordre'].forEach(mode => {
+    const raw = lsGet(storageKey(mode));
+    const el  = document.getElementById('record-' + mode);
+    el.textContent = raw ? '🏆 Record : ' + fmt(parseInt(raw)) : 'Aucun record encore';
+  });
+}
+
+function goHome() {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('accueil').style.display = 'flex';
+  renderAccueil();
+}
+
+/* ════════════════════════════
+   DÉMARRAGE DU JEU
+════════════════════════════ */
+let currentMode = null;
+let score = 0;
+const total = deps.length;
+let chronoStart = null;
+let firstAction  = false;
+let mobileSelectedNum = null;
+let desktopSelected   = null;
+const mobileNumCards  = {};
+
+function startGame(mode) {
+  currentMode   = mode;
+  score         = 0;
+  chronoStart   = null;
+  firstAction   = false;
+  mobileSelectedNum = null;
+  desktopSelected   = null;
+
+  // Nettoyer les grilles
+  ['departements','numeros','mobile-numeros','mobile-noms'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  Object.keys(mobileNumCards).forEach(k => delete mobileNumCards[k]);
+
+  // UI
+  document.getElementById('accueil').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  document.getElementById('fin-banner').style.display  = 'none';
+  document.querySelectorAll('.desktop-layout,.mobile-layout').forEach(e => e.style.display = '');
+  document.getElementById('message').textContent = '';
+  document.getElementById('message').className   = '';
+  document.getElementById('progress-badge').textContent = '0 / ' + total;
+  document.getElementById('mode-badge').textContent = mode === 'ordre' ? '📋 Dans l\'ordre' : '🔀 Désordre';
+  document.getElementById('replay-btn').onclick = () => startGame(mode);
+
+  // Remettre la vue mobile sur numéros
+  document.querySelectorAll('.mobile-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-numeros').classList.add('active');
+
+  buildDesktop(mode);
+  buildMobile(mode);
+}
+
+/* ════════════════════════════
+   CHRONO
+════════════════════════════ */
+function startChronoOnce() {
+  if (firstAction) return;
+  firstAction  = true;
+  chronoStart  = Date.now();
+}
+
+/* ════════════════════════════
+   BADGE & FIN
+════════════════════════════ */
+function updateBadge() {
+  document.getElementById('progress-badge').textContent = score + ' / ' + total;
+  if (score < total) return;
+
+  const elapsed = Date.now() - chronoStart;
+  document.querySelectorAll('.desktop-layout,.mobile-layout').forEach(e => e.style.display = 'none');
+  const banner = document.getElementById('fin-banner');
+  banner.style.display = 'flex';
+  document.getElementById('fin-time-value').textContent = fmt(elapsed);
+
+  const key    = storageKey(currentMode);
+  const bestRaw = lsGet(key);
+  const bestEl  = document.getElementById('fin-best');
+  if (!bestRaw || elapsed < parseInt(bestRaw)) {
+    lsSet(key, elapsed);
+    bestEl.textContent = bestRaw
+      ? '🏆 Nouveau record ! (ancien : ' + fmt(parseInt(bestRaw)) + ')'
+      : '🏆 Premier record enregistré !';
+    bestEl.className = 'fin-best new-record';
+  } else {
+    bestEl.innerHTML  = 'Meilleur temps : <strong>' + fmt(parseInt(bestRaw)) + '</strong>';
+    bestEl.className  = 'fin-best';
+  }
+  showMessage('🎉 Bravo, tout est terminé !', 'ok');
+}
+
+function showMessage(txt, type) {
+  const el = document.getElementById('message');
+  el.textContent = txt;
+  el.className   = type || '';
+}
+
+/* ════════════════════════════
+   DESKTOP
+════════════════════════════ */
+function buildDesktop(mode) {
+  const depContainer = document.getElementById('departements');
+  const numContainer = document.getElementById('numeros');
+
+  const namesOrder  = shuffle(deps);
+  const numsOrder   = mode === 'ordre' ? deps : shuffle(deps);
+
+  namesOrder.forEach(([num, name]) => {
+    const div = document.createElement('div');
+    div.className   = 'item';
+    div.textContent = name;
+    div.dataset.num = num;
+    div.onclick = () => {
+      startChronoOnce();
+      document.querySelectorAll('.item').forEach(x => x.classList.remove('selected'));
+      div.classList.add('selected');
+      desktopSelected = div;
+      showMessage('Sélectionné : ' + name, '');
+    };
+    depContainer.appendChild(div);
+  });
+
+  numsOrder.forEach(([num]) => {
+    const div = document.createElement('div');
+    div.className   = 'num';
+    div.textContent = num;
+    div.dataset.num = num;
+    div.onclick = () => {
+      if (!desktopSelected) return;
+      if (desktopSelected.dataset.num === div.dataset.num) {
+        div.innerHTML = num + ' — ' + desktopSelected.textContent;
+        div.classList.add('correct');
+        desktopSelected.remove();
+        desktopSelected = null;
+        score++;
+        updateBadge();
+        showMessage('✓ Correct !', 'ok');
+      } else {
+        showMessage('✗ Incorrect', 'err');
+        desktopSelected.classList.remove('selected');
+        desktopSelected = null;
+      }
+    };
+    numContainer.appendChild(div);
+  });
+}
+
+/* ════════════════════════════
+   MOBILE
+════════════════════════════ */
+function buildMobile(mode) {
+  const container = document.getElementById('mobile-numeros');
+  const numsOrder = mode === 'ordre' ? deps : shuffle(deps);
+
+  numsOrder.forEach(([num]) => {
+    const card = document.createElement('div');
+    card.className = 'mobile-num-card';
+    card.innerHTML = '<span class="card-num">' + num + '</span><span class="card-name"></span>';
+    card.dataset.num = num;
+    card.onclick = () => {
+      if (card.classList.contains('correct')) return;
+      startChronoOnce();
+      mobileSelectedNum = num;
+      document.getElementById('selected-num-label').textContent = num;
+      buildMobileNoms();
+      switchView('view-noms');
+    };
+    mobileNumCards[num] = card;
+    container.appendChild(card);
+  });
+}
+
+function buildMobileNoms() {
+  const container = document.getElementById('mobile-noms');
+  container.innerHTML = '';
+  const remaining = shuffle(deps.filter(([num]) => !mobileNumCards[num].classList.contains('correct')));
+  remaining.forEach(([num, name]) => {
+    const card = document.createElement('div');
+    card.className   = 'mobile-name-card';
+    card.textContent = name;
+    card.onclick     = () => mobileGuess(num, name, card);
+    container.appendChild(card);
+  });
+}
+
+function mobileGuess(num, name, card) {
+  if (num === mobileSelectedNum) {
+    const numCard = mobileNumCards[mobileSelectedNum];
+    numCard.classList.add('correct');
+    numCard.querySelector('.card-name').textContent = name;
+    mobileSelectedNum = null;
+    score++;
+    updateBadge();
+    showMessage('✓ ' + num + ' — ' + name, 'ok');
+    switchView('view-numeros');
+  } else {
+    card.classList.add('wrong-flash');
+    setTimeout(() => card.classList.remove('wrong-flash'), 350);
+    showMessage('✗ Incorrect', 'err');
+  }
+}
+
+function mobileBack() {
+  mobileSelectedNum = null;
+  switchView('view-numeros');
+  showMessage('', '');
+}
+
+function switchView(id) {
+  document.querySelectorAll('.mobile-view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ── Init ── */
+try { renderAccueil(); } catch(e) { console.error('Init error:', e); }
+</script>
+</body>
+</html>
