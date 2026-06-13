@@ -359,6 +359,33 @@
   .fin-btn.primary { background: var(--accent); color: #fff; }
   .fin-btn.secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
   .fin-btn:hover { opacity: .82; }
+
+  /* ── Barre de recherche ── */
+  .search-wrap {
+    padding: 8px 8px 4px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-search-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: .875rem;
+    font-family: var(--font);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .item.hidden { display: none; }
+  .mobile-name-card.hidden { display: none; }
 </style>
 </head>
 <body>
@@ -410,6 +437,7 @@
   <div class="desktop-layout">
     <div class="panel">
       <h2>Départements</h2>
+      <div class="search-wrap"><input type="text" id="search-desktop" class="search-input" placeholder="🔍 Rechercher…" autocomplete="off" oninput="filterDesktop(this.value)"></div>
       <div id="departements" class="grid"></div>
     </div>
     <div class="panel">
@@ -428,6 +456,7 @@
         <button class="back-btn" onclick="mobileBack()">← Retour</button>
         <span>Département <strong id="selected-num-label"></strong> ?</span>
       </div>
+      <div class="search-wrap mobile-search-wrap"><input type="text" id="search-mobile" class="search-input" placeholder="🔍 Rechercher…" autocomplete="off" oninput="filterMobile(this.value)"></div>
       <div class="mobile-list names-list" id="mobile-noms"></div>
     </div>
   </div>
@@ -546,6 +575,8 @@ function startGame(mode) {
   document.querySelectorAll('.desktop-layout,.mobile-layout').forEach(e => e.style.display = '');
   document.getElementById('message').textContent = '';
   document.getElementById('message').className   = '';
+  const sd = document.getElementById('search-desktop'); if(sd) sd.value='';
+  const sm = document.getElementById('search-mobile');  if(sm) sm.value='';
   document.getElementById('progress-badge').textContent = '0 / ' + total;
   document.getElementById('mode-badge').textContent = mode === 'ordre' ? '📋 Dans l\'ordre' : '🔀 Désordre';
   document.getElementById('replay-btn').onclick = () => startGame(mode);
@@ -678,6 +709,7 @@ function buildMobile(mode) {
 }
 
 function buildMobileNoms() {
+  const sm = document.getElementById('search-mobile'); if(sm) sm.value='';
   const container = document.getElementById('mobile-noms');
   container.innerHTML = '';
   const remaining = shuffle(deps.filter(([num]) => !mobileNumCards[num].classList.contains('correct')));
@@ -716,6 +748,31 @@ function mobileBack() {
 function switchView(id) {
   document.querySelectorAll('.mobile-view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+}
+
+
+/* ════════════════════════════
+   RECHERCHE
+════════════════════════════ */
+function normalize(str) {
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+function filterDesktop(query) {
+  const q = normalize(query.trim());
+  document.querySelectorAll('#departements .item').forEach(el => {
+    const match = !q || normalize(el.textContent).includes(q);
+    el.classList.toggle('hidden', !match);
+  });
+}
+
+function filterMobile(query) {
+  const q = normalize(query.trim());
+  document.querySelectorAll('#mobile-noms .mobile-name-card').forEach(el => {
+    const match = !q || normalize(el.textContent).includes(q);
+    el.classList.toggle('hidden', !match);
+  });
 }
 
 /* ── Init ── */
