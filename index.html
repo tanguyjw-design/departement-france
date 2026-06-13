@@ -350,7 +350,7 @@ shuffledDesktop.forEach(([num, name]) => {
   depContainer.appendChild(div);
 });
 
-[...deps].sort(() => Math.random() - 0.5).forEach(([num]) => {
+deps.forEach(([num]) => {
   const div = document.createElement('div');
   div.className = 'num';
   div.textContent = num;
@@ -380,10 +380,10 @@ shuffledDesktop.forEach(([num, name]) => {
 const mobileNumContainer  = document.getElementById('mobile-numeros');
 const mobileNomContainer  = document.getElementById('mobile-noms');
 
-// Cartes numéros (ordre aléatoire)
+// Cartes numéros (ordre croissant)
 const mobileNumCards = {}; // num -> element
 
-[...deps].sort(() => Math.random() - 0.5).forEach(([num]) => {
+deps.forEach(([num]) => {
   const card = document.createElement('div');
   card.className = 'mobile-num-card';
   card.innerHTML = '<span class="card-num">' + num + '</span><span class="card-name"></span>';
