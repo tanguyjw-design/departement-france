@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Départements français – Association</title>
+<style>
+  /* ── Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --border: #d4d0c8;
+    --text: #2a2822;
+    --muted: #7a7670;
+    --accent: #3a6e5a;
+    --accent-light: #e8f2ee;
+    --correct: #c8e6c9;
+    --correct-text: #1b5e20;
+    --selected: #fff3cd;
+    --selected-border: #e6a817;
+    --error: #fdecea;
+    --radius: 6px;
+    --font: 'Segoe UI', system-ui, Arial, sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  header h1 { font-size: 1rem; font-weight: 600; letter-spacing: .02em; }
+  #progress-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: .85rem;
+    white-space: nowrap;
+  }
+
+  /* ── Message bar ── */
+  #message {
+    text-align: center;
+    font-size: .9rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    min-height: 36px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    transition: background .2s;
+  }
+  #message.ok  { background: var(--correct); color: var(--correct-text); }
+  #message.err { background: var(--error);   color: #b71c1c; }
+
+  /* ── Desktop layout ── */
+  .desktop-layout {
+    display: flex;
+    gap: 20px;
+    padding: 16px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .panel {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .panel h2 {
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .grid {
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .item, .num {
+    padding: 7px 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: .875rem;
+    transition: background .12s, border-color .12s;
+    user-select: none;
+  }
+  .item:hover, .num:hover { background: var(--accent-light); border-color: var(--accent); }
+  .item.selected, .num.selected {
+    background: var(--selected);
+    border-color: var(--selected-border);
+    font-weight: 600;
+  }
+  .num { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .correct {
+    background: var(--correct) !important;
+    border-color: #81c784 !important;
+    color: var(--correct-text);
+    cursor: default;
+    font-weight: 600;
+  }
+  .correct:hover { background: var(--correct) !important; }
+
+  /* ── Mobile layout ── */
+  .mobile-layout { display: none; }
+
+  /* ── Mobile views ── */
+  .mobile-view { display: none; flex-direction: column; height: calc(100vh - 90px); }
+  .mobile-view.active { display: flex; }
+
+  .mobile-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    align-content: start;
+  }
+  .mobile-list.names-list {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-num-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 6px;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .12s;
+    user-select: none;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .mobile-num-card:hover, .mobile-num-card:active { background: var(--accent-light); border-color: var(--accent); }
+  .mobile-num-card.correct {
+    background: var(--correct);
+    border-color: #81c784;
+    color: var(--correct-text);
+    cursor: default;
+    font-size: .78rem;
+    font-weight: 600;
+  }
+  .mobile-num-card.correct .card-num { font-size: 1rem; font-weight: 700; display: block; }
+  .mobile-num-card.correct .card-name { display: block; }
+  .mobile-num-card:not(.correct) .card-num { font-size: 1.1rem; }
+  .mobile-num-card:not(.correct) .card-name { display: none; }
+
+  .mobile-name-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: background .12s;
+    user-select: none;
+  }
+  .mobile-name-card:hover, .mobile-name-card:active { background: var(--accent-light); border-color: var(--accent); }
+  .mobile-name-card.wrong-flash {
+    background: var(--error);
+    border-color: #ef9a9a;
+    animation: shake .3s;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  /* Mobile sub-header (names view) */
+  .mobile-subheader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 5px 10px;
+    font-size: .8rem;
+    cursor: pointer;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .back-btn:hover { background: var(--accent-light); }
+  .mobile-subheader span { font-size: .9rem; color: var(--muted); }
+  .mobile-subheader strong { color: var(--text); }
+
+  /* ── Responsive breakpoint ── */
+  @media (max-width: 640px) {
+    .desktop-layout { display: none; }
+    .mobile-layout  { display: block; }
+  }
+
+  /* ── Fin banner ── */
+  #fin-banner {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--correct-text);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗺 Départements français</h1>
+  <span id="progress-badge">0 / 101</span>
+</header>
+
+<div id="message"></div>
+
+<!-- ══ DESKTOP ══ -->
+<div class="desktop-layout">
+  <div class="panel">
+    <h2>Départements</h2>
+    <div id="departements" class="grid"></div>
+  </div>
+  <div class="panel">
+    <h2>Numéros</h2>
+    <div id="numeros" class="grid"></div>
+  </div>
+</div>
+
+<!-- ══ MOBILE ══ -->
+<div class="mobile-layout">
+
+  <!-- Vue numéros -->
+  <div id="view-numeros" class="mobile-view active">
+    <div class="mobile-list" id="mobile-numeros"></div>
+  </div>
+
+  <!-- Vue noms -->
+  <div id="view-noms" class="mobile-view">
+    <div class="mobile-subheader">
+      <button class="back-btn" onclick="mobileBack()">← Retour</button>
+      <span>Quel est le département <strong id="selected-num-label"></strong> ?</span>
+    </div>
+    <div class="mobile-list names-list" id="mobile-noms"></div>
+  </div>
+
+</div>
+
+<div id="fin-banner">🎉 Bravo, tout est terminé !</div>
+
+<script>
+const deps = [
+["01","Ain"],["02","Aisne"],["03","Allier"],["04","Alpes-de-Haute-Provence"],["05","Hautes-Alpes"],
+["06","Alpes-Maritimes"],["07","Ardèche"],["08","Ardennes"],["09","Ariège"],["10","Aube"],
+["11","Aude"],["12","Aveyron"],["13","Bouches-du-Rhône"],["14","Calvados"],["15","Cantal"],
+["16","Charente"],["17","Charente-Maritime"],["18","Cher"],["19","Corrèze"],["2A","Corse-du-Sud"],
+["2B","Haute-Corse"],["21","Côte-d'Or"],["22","Côtes-d'Armor"],["23","Creuse"],["24","Dordogne"],
+["25","Doubs"],["26","Drôme"],["27","Eure"],["28","Eure-et-Loir"],["29","Finistère"],
+["30","Gard"],["31","Haute-Garonne"],["32","Gers"],["33","Gironde"],["34","Hérault"],
+["35","Ille-et-Vilaine"],["36","Indre"],["37","Indre-et-Loire"],["38","Isère"],["39","Jura"],
+["40","Landes"],["41","Loir-et-Cher"],["42","Loire"],["43","Haute-Loire"],["44","Loire-Atlantique"],
+["45","Loiret"],["46","Lot"],["47","Lot-et-Garonne"],["48","Lozère"],["49","Maine-et-Loire"],
+["50","Manche"],["51","Marne"],["52","Haute-Marne"],["53","Mayenne"],["54","Meurthe-et-Moselle"],
+["55","Meuse"],["56","Morbihan"],["57","Moselle"],["58","Nièvre"],["59","Nord"],
+["60","Oise"],["61","Orne"],["62","Pas-de-Calais"],["63","Puy-de-Dôme"],["64","Pyrénées-Atlantiques"],
+["65","Hautes-Pyrénées"],["66","Pyrénées-Orientales"],["67","Bas-Rhin"],["68","Haut-Rhin"],["69","Rhône"],
+["70","Haute-Saône"],["71","Saône-et-Loire"],["72","Sarthe"],["73","Savoie"],["74","Haute-Savoie"],
+["75","Paris"],["76","Seine-Maritime"],["77","Seine-et-Marne"],["78","Yvelines"],["79","Deux-Sèvres"],
+["80","Somme"],["81","Tarn"],["82","Tarn-et-Garonne"],["83","Var"],["84","Vaucluse"],
+["85","Vendée"],["86","Vienne"],["87","Haute-Vienne"],["88","Vosges"],["89","Yonne"],
+["90","Territoire de Belfort"],["91","Essonne"],["92","Hauts-de-Seine"],["93","Seine-Saint-Denis"],
+["94","Val-de-Marne"],["95","Val-d'Oise"],["971","Guadeloupe"],["972","Martinique"],
+["973","Guyane"],["974","La Réunion"],["976","Mayotte"]
+];
+
+/* ═══════════════════════════
+   ÉTAT PARTAGÉ
+═══════════════════════════ */
+let score = 0;
+const total = deps.length;
+let mobileSelectedNum = null; // numéro en attente côté mobile
+
+function updateBadge() {
+  document.getElementById('progress-badge').textContent = score + ' / ' + total;
+  if (score === total) {
+    document.querySelectorAll('.desktop-layout,.mobile-layout').forEach(e => e.style.display = 'none');
+    document.getElementById('fin-banner').style.display = 'block';
+    showMessage('🎉 Bravo, tout est terminé !', 'ok');
+  }
+}
+
+function showMessage(txt, type) {
+  const el = document.getElementById('message');
+  el.textContent = txt;
+  el.className = type || '';
+}
+
+/* ═══════════════════════════
+   DESKTOP
+═══════════════════════════ */
+const depContainer = document.getElementById('departements');
+const numContainer = document.getElementById('numeros');
+let desktopSelected = null;
+
+const shuffledDesktop = [...deps].sort(() => Math.random() - 0.5);
+
+shuffledDesktop.forEach(([num, name]) => {
+  const div = document.createElement('div');
+  div.className = 'item';
+  div.textContent = name;
+  div.dataset.num = num;
+  div.onclick = () => {
+    document.querySelectorAll('.item').forEach(x => x.classList.remove('selected'));
+    div.classList.add('selected');
+    desktopSelected = div;
+    showMessage('Sélectionné : ' + name, '');
+  };
+  depContainer.appendChild(div);
+});
+
+[...deps].sort(() => Math.random() - 0.5).forEach(([num]) => {
+  const div = document.createElement('div');
+  div.className = 'num';
+  div.textContent = num;
+  div.dataset.num = num;
+  div.onclick = () => {
+    if (!desktopSelected) return;
+    if (desktopSelected.dataset.num === div.dataset.num) {
+      div.innerHTML = '<span class="card-num">' + div.dataset.num + '</span> — ' + desktopSelected.textContent;
+      div.classList.add('correct');
+      desktopSelected.remove();
+      desktopSelected = null;
+      score++;
+      updateBadge();
+      showMessage('✓ Correct !', 'ok');
+    } else {
+      showMessage('✗ Incorrect', 'err');
+      desktopSelected.classList.remove('selected');
+      desktopSelected = null;
+    }
+  };
+  numContainer.appendChild(div);
+});
+
+/* ═══════════════════════════
+   MOBILE
+═══════════════════════════ */
+const mobileNumContainer  = document.getElementById('mobile-numeros');
+const mobileNomContainer  = document.getElementById('mobile-noms');
+
+// Cartes numéros (ordre aléatoire)
+const mobileNumCards = {}; // num -> element
+
+[...deps].sort(() => Math.random() - 0.5).forEach(([num]) => {
+  const card = document.createElement('div');
+  card.className = 'mobile-num-card';
+  card.innerHTML = '<span class="card-num">' + num + '</span><span class="card-name"></span>';
+  card.dataset.num = num;
+  card.onclick = () => {
+    if (card.classList.contains('correct')) return;
+    mobileSelectedNum = num;
+    document.getElementById('selected-num-label').textContent = num;
+    buildMobileNoms();
+    switchView('view-noms');
+  };
+  mobileNumCards[num] = card;
+  mobileNumContainer.appendChild(card);
+});
+
+// Construction de la liste noms (mélangée, seulement les non-résolus)
+function buildMobileNoms() {
+  mobileNomContainer.innerHTML = '';
+  const remaining = deps.filter(([num]) => !mobileNumCards[num].classList.contains('correct'));
+  const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+  shuffled.forEach(([num, name]) => {
+    const card = document.createElement('div');
+    card.className = 'mobile-name-card';
+    card.textContent = name;
+    card.onclick = () => mobileGuess(num, name, card);
+    mobileNomContainer.appendChild(card);
+  });
+}
+
+function mobileGuess(num, name, card) {
+  if (num === mobileSelectedNum) {
+    // Correct → on met à jour la carte numéro et on revient
+    const numCard = mobileNumCards[mobileSelectedNum];
+    numCard.classList.add('correct');
+    numCard.querySelector('.card-name').textContent = name;
+    mobileSelectedNum = null;
+    score++;
+    updateBadge();
+    showMessage('✓ ' + num + ' — ' + name, 'ok');
+    switchView('view-numeros');
+  } else {
+    // Mauvais → flash rouge, rien d'autre
+    card.classList.add('wrong-flash');
+    setTimeout(() => card.classList.remove('wrong-flash'), 350);
+    showMessage('✗ Incorrect', 'err');
+  }
+}
+
+function mobileBack() {
+  mobileSelectedNum = null;
+  switchView('view-numeros');
+  showMessage('', '');
+}
+
+function switchView(id) {
+  document.querySelectorAll('.mobile-view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
